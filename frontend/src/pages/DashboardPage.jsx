@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Row, Col, Card, Typography, Spin, Button, Form, InputNumber, message } from 'antd'
 import { SettingOutlined } from '@ant-design/icons'
+import dayjs from 'dayjs'
 import { getNutritionSummary, getWeeklyNutrition } from '../api/nutrition'
 import { updateMe } from '../api/auth'
 import useAuthStore from '../store/authStore'
@@ -17,7 +18,9 @@ export default function DashboardPage() {
   const [form] = Form.useForm()
 
   useEffect(() => {
-    Promise.all([getNutritionSummary(), getWeeklyNutrition()])
+    const today = dayjs()
+    const monday = today.subtract(today.day() === 0 ? 6 : today.day() - 1, 'day').format('YYYY-MM-DD')
+    Promise.all([getNutritionSummary(), getWeeklyNutrition(monday)])
       .then(([s, w]) => { setSummary(s.data); setWeekly(w.data) })
       .finally(() => setLoading(false))
   }, [])

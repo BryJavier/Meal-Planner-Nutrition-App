@@ -1,8 +1,19 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { Empty } from 'antd'
 
 const DARK = { grid: '#334155', text: '#94A3B8', tooltip: '#1E293B', border: '#334155' }
 
 export default function WeeklyBarChart({ data, calorieGoal }) {
+  const hasData = data?.some(d => (d.protein_g || 0) + (d.carbs_g || 0) + (d.fat_g || 0) > 0)
+
+  if (!hasData) {
+    return (
+      <div style={{ height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Empty description={<span style={{ color: '#64748B' }}>No meals logged this week</span>} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      </div>
+    )
+  }
+
   return (
     <ResponsiveContainer width="100%" height={260}>
       <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
