@@ -130,7 +130,8 @@ export default function AppLayout() {
       </Layout>
 
       {isMobile && (
-        <nav
+        <>
+          <nav
           className="mobile-bottom-nav"
           style={{
             position: 'fixed',
@@ -171,9 +172,10 @@ export default function AppLayout() {
               </button>
             )
           })}
-        </nav>
-      <FloatingButton />
-      <MealSuggestionDrawer />
+          </nav>
+          <FloatingButton />
+          <MealSuggestionDrawer />
+        </>
       )}
     </Layout>
   )

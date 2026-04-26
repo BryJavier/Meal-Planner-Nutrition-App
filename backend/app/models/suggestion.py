@@ -7,7 +7,7 @@ class Suggestion(Base):
     __tablename__ = "suggestions"
 
     id = Column(String, primary_key=True, index=True)
-    user_id = Column(String, ForeignKey("user.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
     meal_name = Column(String, nullable=False)
     ingredients = Column(JSON, nullable=False)
     prep_time = Column(Integer, nullable=False)
