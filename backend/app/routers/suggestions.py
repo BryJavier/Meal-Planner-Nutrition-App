@@ -57,6 +57,9 @@ async def get_meal_suggestion(
         
         return suggestion
     except Exception as e:
+        print(f"Error in fetch suggestion: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to fetch suggestion: {str(e)}"
