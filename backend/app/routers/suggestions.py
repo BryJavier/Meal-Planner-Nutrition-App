@@ -7,6 +7,8 @@ from datetime import datetime
 from app.database import get_db
 from app.models.suggestion import Suggestion
 from app.models.recipe import Recipe
+from app.models.ingredient import Ingredient
+from app.models.recipe_ingredient import RecipeIngredient
 from app.dependencies import get_current_user
 from app.services.suggestion_service import fetch_meal_suggestion
 from app.utils.crypto import decrypt
@@ -78,19 +80,49 @@ async def convert_suggestion_to_recipe(
 ):
     """Convert a meal suggestion to a saved recipe."""
     try:
+        print(f"DEBUG: Converting suggestion to recipe: {data.meal_name}")
+        
+        # Create recipe with valid fields only
         new_recipe = Recipe(
             id=str(uuid.uuid4()),
             user_id=current_user.id,
             name=data.meal_name,
-            ingredients=data.ingredients,
-            prep_time=data.prep_time,
             servings=data.servings,
-            macros=data.macros,
-            created_at=datetime.utcnow()
+            prep_time_minutes=data.prep_time,
+            is_ai_generated=True,
         )
         db.add(new_recipe)
+        
+        # Process ingredients - create ingredient entries and link to recipe
+        for ing_data in data.ingredients:
+            # Create ingredient (AI-generated ingredients stored without macro details)
+            ingredient = Ingredient(
+                id=str(uuid.uuid4()),
+                name=ing_data["name"],
+                calories_per_100g=0,
+                protein_per_100g=0,
+                carbs_per_100g=0,
+                fat_per_100g=0,
+                unit="g",
+                created_by=current_user.id,
+            )
+            db.add(ingredient)
+            
+            # Create recipe-ingredient link
+            recipe_ingredient = RecipeIngredient(
+                id=str(uuid.uuid4()),
+                recipe_id=new_recipe.id,
+                ingredient_id=ingredient.id,
+                quantity_g=ing_data.get("amount", 0),
+                display_amount=ing_data.get("amount"),
+                display_unit=ing_data.get("unit", "g"),
+            )
+            db.add(recipe_ingredient)
+        
         await db.commit()
         await db.refresh(new_recipe)
+        
+        print(f"DEBUG: Recipe created successfully: {new_recipe.id}")
         
         return {
             "id": new_recipe.id,
@@ -98,6 +130,9 @@ async def convert_suggestion_to_recipe(
             "created_at": new_recipe.created_at
         }
     except Exception as e:
+        print(f"Error in convert-to-recipe: {type(e).__name__}: {str(e)}")
+        import traceback
+        traceback.print_exc()
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
