@@ -1,13 +1,12 @@
 import anthropic
 import json
-from app.config import settings
 
-def fetch_meal_suggestion():
+def fetch_meal_suggestion(api_key: str):
     """Fetch AI-generated meal suggestion from Anthropic."""
-    if not settings.ANTHROPIC_API_KEY:
-        raise ValueError("ANTHROPIC_API_KEY is not configured")
+    if not api_key:
+        raise ValueError("Anthropic API key is not configured for this user")
     
-    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+    client = anthropic.Anthropic(api_key=api_key)
     
     prompt = """Generate a healthy meal suggestion. Return ONLY valid JSON with this structure:
 {

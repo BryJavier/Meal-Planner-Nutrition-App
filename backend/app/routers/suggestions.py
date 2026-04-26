@@ -34,7 +34,12 @@ async def get_meal_suggestion(
 ):
     """Get a new meal suggestion."""
     try:
-        suggestion = fetch_meal_suggestion()
+        # Get user's API key from database
+        api_key = current_user.anthropic_api_key_encrypted
+        if not api_key:
+            raise ValueError("User has not configured an Anthropic API key")
+        
+        suggestion = fetch_meal_suggestion(api_key)
         
         # Store suggestion in DB
         db_suggestion = Suggestion(
