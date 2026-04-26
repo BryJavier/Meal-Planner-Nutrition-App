@@ -32,5 +32,21 @@ def fetch_meal_suggestion(api_key: str):
     )
     
     response_text = message.content[0].text
-    suggestion = json.loads(response_text)
+    print(f"DEBUG: API Response: {response_text[:200]}")  # Log first 200 chars
+    
+    if not response_text or not response_text.strip():
+        raise ValueError("Anthropic API returned empty response")
+    
+    # Try to extract JSON from response (in case there's surrounding text)
+    try:
+        suggestion = json.loads(response_text)
+    except json.JSONDecodeError:
+        # Try to find JSON in the response
+        import re
+        json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+        if json_match:
+            suggestion = json.loads(json_match.group())
+        else:
+            raise ValueError(f"Could not parse JSON from response: {response_text}")
+    
     return suggestion
