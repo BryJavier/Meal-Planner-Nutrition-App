@@ -34,7 +34,7 @@ async def get_meal_suggestion(
 ):
     """Get a new meal suggestion."""
     try:
-        suggestion = await fetch_meal_suggestion()
+        suggestion = fetch_meal_suggestion()
         
         # Store suggestion in DB
         db_suggestion = Suggestion(
