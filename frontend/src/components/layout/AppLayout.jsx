@@ -173,10 +173,10 @@ export default function AppLayout() {
             )
           })}
           </nav>
-          <FloatingButton />
-          <MealSuggestionDrawer />
         </>
       )}
+      <FloatingButton />
+      <MealSuggestionDrawer />
     </Layout>
   )
 }

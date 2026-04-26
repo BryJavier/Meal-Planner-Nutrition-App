@@ -14,7 +14,7 @@ const FloatingButton = () => {
     <div
       style={{
         position: 'fixed',
-        bottom: '20px',
+        bottom: '100px',
         right: '20px',
         zIndex: 100,
       }}
